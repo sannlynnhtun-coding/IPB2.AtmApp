@@ -1,3 +1,11 @@
 <Solution>
+  <Folder Name="/.Doc/">
+    <File Path="Feature1.md" />
+    <File Path="Feature2.md" />
+    <File Path="Feature3.md" />
+    <File Path="Feature4.md" />
+    <File Path="Feature5.md" />
+    <File Path="Feature6.md" />
+  </Folder>
   <Project Path="IPB2.AtmApp/IPB2.AtmApp.csproj" />
 </Solution>
