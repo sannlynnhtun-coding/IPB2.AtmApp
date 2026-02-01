@@ -1,75 +1,181 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace IPB2.AtmApp.Features.Account
 {
     public class AccountUI
     {
-        public void CreateAccount()
+        private readonly AccountService _service = new AccountService();
+        private string? _currentMobileNo;
+
+        public void Start()
         {
-            Console.WriteLine("=== Create New Account ===");
-            Console.Write("Enter your name: ");
-            string name = Console.ReadLine()!;
-            Console.Write("Enter your mobile no: ");
-            string mobileNo = Console.ReadLine()!;
-            EnterPassword:
-            Console.Write("Enter your password: ");
-            string password = Console.ReadLine()!;
-            Console.Write("Enter your confirm password: ");
-            string confirmPassword = Console.ReadLine()!;
-            if (password != confirmPassword)
+            while (true)
             {
+                ShowMainMenu();
+            }
+        }
+
+        private void ShowMainMenu()
+        {
+            Console.WriteLine("\n=== Main Menu ===");
+            Console.WriteLine("1) Create Account");
+            Console.WriteLine("2) Enter Account");
+            Console.WriteLine("3) Exit");
+            Console.Write("Choose: ");
+            var choice = Console.ReadLine();
+
+            switch (choice)
+            {
+                case "1":
+                    CreateAccount();
+                    break;
+
+                case "2":
+                    EnterAccount();
+                    break;
+
+                case "3":
+                    Environment.Exit(0);
+                    return; 
+                default:
+                    Console.WriteLine("Invalid option.");
+                    break;
+            }
+        }
+
+        private void SessionMenu()
+        {
+            while (_currentMobileNo != null)
+            {
+                Console.WriteLine("\n=== Session Menu ===");
+                Console.WriteLine("1) Deposit");
+                Console.WriteLine("2) Check Balance");
+                Console.WriteLine("3) Withdraw");
+                Console.WriteLine("4) Logout");
+                Console.WriteLine("5) Exit");
+                Console.Write("Choose: ");
+                var choice = Console.ReadLine();
+
+                switch (choice)
+                {
+                    case "1":
+                        Deposit();
+                        break;
+
+                    case "2":
+                        CheckBalance();
+                        break;
+
+                    case "3":
+                        Withdraw();
+                        break;
+
+                    case "4":
+                        Logout();
+                        return; // back to main menu
+
+                    case "5":
+                        Environment.Exit(0);
+                        return;
+
+                    default:
+                        Console.WriteLine("Invalid option.");
+                        break;
+                }
+            }
+        }
+
+        private void CreateAccount()
+        {
+            Console.WriteLine("\n=== Create New Account ===");
+
+            Console.Write("Enter your name: ");
+            string name = Console.ReadLine() ?? "";
+
+            Console.Write("Enter your mobile no: ");
+            string mobileNo = Console.ReadLine() ?? "";
+
+            string password;
+            string confirmPassword;
+
+            while (true)
+            {
+                Console.Write("Enter your password: ");
+                password = Console.ReadLine() ?? "";
+
+                Console.Write("Enter your confirm password: ");
+                confirmPassword = Console.ReadLine() ?? "";
+
+                if (password == confirmPassword) break;
+
                 Console.WriteLine("Password and Confirm Password do not match.");
-                goto EnterPassword;
             }
 
-            CreateAccountRequestDto accountDto = new CreateAccountRequestDto(
-                name, mobileNo, password, confirmPassword);
-            AccountService accountService = new AccountService();
-            var result = accountService.CreateAccount(accountDto);
+            var req = new CreateAccountRequestDto(name, mobileNo, password, confirmPassword);
+            var result = _service.CreateAccount(req);
+
             Console.WriteLine(result.Message);
         }
-    }
 
-    public class CreateAccountRequestDto
-    {
-        public CreateAccountRequestDto(string name, string mobileNo, string password, string confirmPassword)
+        private void EnterAccount()
         {
-            Name = name;
-            MobileNo = mobileNo;
-            Password = password;
-            ConfirmPassword = confirmPassword;
+            Console.WriteLine("\n=== Enter Account ===");
+            Console.Write("Enter your mobile no: ");
+            string mobileNo = Console.ReadLine() ?? "";
+
+            Console.Write("Enter your password: ");
+            string password = Console.ReadLine() ?? "";
+
+            var result = _service.Login(new LoginRequestDto(mobileNo, password));
+            Console.WriteLine(result.Message);
+
+            if (!result.IsSuccess) return;
+
+            _currentMobileNo = mobileNo.Trim();
+            SessionMenu();
         }
-        public string Name { get; set; }
-        public string MobileNo { get; set; }
-        public string Password { get; set; }
-        public string ConfirmPassword { get; set; }
-    }
 
-    public class CreateAccountResponseDto
-    {
-        public bool IsSuccess { get; set; }
-        public string Message { get; set; }
-    }
-
-    // Table
-    public class AccountDto
-    {
-        public AccountDto(string id, string name, string mobileNo, string password, decimal balance = 0)
+        private void Deposit()
         {
-            AccountId = id;
-            Name = name;
-            MobileNo = mobileNo;
-            Password = password;
-            Balance = balance;
+            Console.WriteLine("\n=== Deposit ===");
+            Console.Write("Enter amount: ");
+
+            if (!decimal.TryParse(Console.ReadLine(), out var amount))
+            {
+                Console.WriteLine("Invalid amount.");
+                return;
+            }
+
+            var result = _service.Deposit(new DepositRequestDto(_currentMobileNo!, amount));
+            Console.WriteLine(result.Message);
         }
-        public string AccountId { get; set; }
-        public string Name { get; set; }
-        public string MobileNo { get; set; }
-        public string Password { get; set; }
-        public decimal Balance { get; set; }
+
+        private void CheckBalance()
+        {
+            Console.WriteLine("\n=== Check Balance ===");
+            var result = _service.GetBalance(new BalanceRequestDto(_currentMobileNo!));
+            Console.WriteLine(result.Message);
+        }
+
+        private void Withdraw()
+        {
+            Console.WriteLine("\n=== Withdraw ===");
+            Console.Write("Enter amount: ");
+
+            if (!decimal.TryParse(Console.ReadLine(), out var amount))
+            {
+                Console.WriteLine("Invalid amount.");
+                return;
+            }
+
+            var result = _service.Withdraw(new WithdrawRequestDto(_currentMobileNo!, amount));
+            Console.WriteLine(result.Message);
+        }
+
+        private void Logout()
+        {
+            _currentMobileNo = null;
+            Console.WriteLine("Logged out.");
+        }
     }
 }
