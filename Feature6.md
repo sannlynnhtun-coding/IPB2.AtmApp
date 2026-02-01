@@ -35,10 +35,10 @@ Purpose: actions for the current account, logout, exit
 > This code assumes you already have:
 > 
 - `AccountService`
-- DTOs: `CreateAccountRequestDto`, `DepositRequestDto`, `WithdrawRequestDto`, `BalanceRequestDto`
+- DTOs: `CreateAccountRequestDto`, `LoginRequestDto`, `DepositRequestDto`, `WithdrawRequestDto`, `BalanceRequestDto`
 - Response DTOs: `CreateAccountResponseDto`, `BasicResponseDto`
 - Model: `AccountDto`
-- Service methods: `CreateAccount`, `EnterAccount`, `Deposit`, `Withdraw`, `GetBalance`
+- Service methods: `CreateAccount`, `Login`, `Deposit`, `Withdraw`, `GetBalance`
 
 ```csharp
 using System;
@@ -163,7 +163,10 @@ public class AccountUI
         Console.Write("Enter your mobile no: ");
         string mobileNo = Console.ReadLine() ?? "";
 
-        var result = _service.EnterAccount(mobileNo);
+        Console.Write("Enter your password: ");
+        string password = Console.ReadLine() ?? "";
+
+        var result = _service.Login(new LoginRequestDto(mobileNo, password));
         Console.WriteLine(result.Message);
 
         if (!result.IsSuccess) return;

@@ -22,30 +22,51 @@ Until now we always asked mobile no for every action. From this point:
 
 ### 2) What we need to add
 
-### A) A small “enter account” check in Service
+### A) Login Request DTO
+
+```csharp
+public class LoginRequestDto
+{
+    public LoginRequestDto(string mobileNo, string password)
+    {
+        MobileNo = mobileNo;
+        Password = password;
+    }
+
+    public string MobileNo { get; set; }
+    public string Password { get; set; }
+}
+```
+
+### B) A small “enter account” check in Service
 
 We’ll reuse `BasicResponseDto`.
 
 Add this method inside `AccountService`:
 
 ```csharp
-public BasicResponseDto EnterAccount(string mobileNo)
+public BasicResponseDto Login(LoginRequestDto request)
 {
-    if (string.IsNullOrWhiteSpace(mobileNo))
+    if (string.IsNullOrWhiteSpace(request.MobileNo))
         return new BasicResponseDto { IsSuccess = false, Message = "Please enter your mobile no." };
 
-    var account = _accounts.FirstOrDefault(x => x.MobileNo == mobileNo.Trim());
+    if (string.IsNullOrWhiteSpace(request.Password))
+        return new BasicResponseDto { IsSuccess = false, Message = "Please enter your password." };
+
+    var account = _accounts.FirstOrDefault(x => x.MobileNo == request.MobileNo.Trim());
     if (account is null)
         return new BasicResponseDto { IsSuccess = false, Message = "Account not found." };
+        
+    if (account.Password != request.Password)
+        return new BasicResponseDto { IsSuccess = false, Message = "Invalid password." };
 
     return new BasicResponseDto { IsSuccess = true, Message = $"Hello, {account.Name}!" };
 }
-
 ```
 
 ---
 
-### B) Store current account in UI
+### C) Store current account in UI
 
 Add a field in `AccountUI`:
 
@@ -77,7 +98,10 @@ private void EnterAccount()
     Console.Write("Enter your mobile no: ");
     string mobileNo = Console.ReadLine() ?? "";
 
-    var result = _service.EnterAccount(mobileNo);
+    Console.Write("Enter your password: ");
+    string password = Console.ReadLine() ?? "";
+
+    var result = _service.Login(new LoginRequestDto(mobileNo, password));
     Console.WriteLine(result.Message);
 
     if (!result.IsSuccess) return;
