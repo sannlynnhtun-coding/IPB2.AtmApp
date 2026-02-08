@@ -10,4 +10,6 @@
   <Project Path="IPB2.AtmApp.DapperSample/IPB2.AtmApp.DapperSample.csproj" Id="2591ef84-9ce6-41e7-b4d9-9b9fb426adce" />
   <Project Path="IPB2.AtmApp/IPB2.AtmApp.csproj" />
   <Project Path="IPB2.AtmAppV2/IPB2.AtmAppV2.csproj" Id="60689dfb-122b-4089-ac8a-f1bb7a7db2a0" />
+  <Project Path="IPB2.StaffApp/IPB2.StaffApp.csproj" Id="f713a95d-03c1-4809-9212-6c057c9efa13" />
+  <Project Path="IPB2.TeacherApp/IPB2.TeacherApp.csproj" Id="79f18bf5-d327-4a93-b731-330367344618" />
 </Solution>
