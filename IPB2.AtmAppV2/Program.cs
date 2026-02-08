@@ -22,15 +22,15 @@ connection.Open();
 
 #region Read
 
-//SqlCommand cmd = new SqlCommand(@"SELECT [AccountId]
-//      ,[Name]
-//      ,[MobileNo]
-//      ,[Password]
-//      ,[Balance]
-//  FROM [dbo].[Tbl_Account] Where IsDelete = 0", connection);
-//SqlDataAdapter adapter = new SqlDataAdapter(cmd);
-//DataTable dt = new DataTable();
-//adapter.Fill(dt);
+SqlCommand cmd = new SqlCommand(@"SELECT [AccountId]
+      ,[Name]
+      ,[MobileNo]
+      ,[Password]
+      ,[Balance]
+  FROM [dbo].[Tbl_Account] Where IsDelete = 0", connection);
+SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+DataTable dt = new DataTable();
+adapter.Fill(dt);
 
 #endregion
 
@@ -132,13 +132,14 @@ connection.Close();
 // row
 // column
 
-//foreach(DataRow dr in dt.Rows)
-//{
-//    Console.WriteLine(dr["AccountId"]);   
-//    Console.WriteLine(dr["Name"]);   
-//    Console.WriteLine(dr["MobileNo"]);   
-//    Console.WriteLine(dr["Password"]);   
-//    Console.WriteLine(dr["Balance"]);   
-//}
+foreach (DataRow dr in dt.Rows)
+{
+    object id = dr["AccountId"];
+    Console.WriteLine(id);
+    Console.WriteLine(dr["Name"]);
+    Console.WriteLine(dr["MobileNo"]);
+    Console.WriteLine(dr["Password"]);
+    Console.WriteLine(dr["Balance"]);
+}
 
 Console.ReadLine();
